@@ -14,9 +14,8 @@ library(tibble)
 
 You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
+```{r load_data, echo=FALSE}
 resq_data <- read_excel("resq-raw-data/sample_hospital.xlsx")
 
 ```
-
 
