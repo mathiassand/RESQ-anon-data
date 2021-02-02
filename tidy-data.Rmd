@@ -17,5 +17,18 @@ You can also embed plots, for example:
 ```{r load_data, echo=FALSE}
 resq_data <- read_excel("resq-raw-data/sample_hospital.xlsx")
 
+resq_tibble<-tribble(
+~department_type, ~DeptTypeStr, ~hospitalized_in, ~hospital_days, ~stroke_type, ~nihss, ~nihss_score, ~ct_mri, ~ct_time, ~recanalization_procedures, ~dysphagia_screening, ~afib_flutter, ~antithrombotics, ~statin, ~smoking_cessation, ~antihypertensive, ~discharge_destination, ~discharge_mrs, ~discharge_date, ~door_to_needle, ~door_to_groin,
+  1, "neurology", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
+  2,  "neurosurgery", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
+  3,  "anesthesiology/resusccitation/critical care department", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
+  4,  "internal medicine", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
+  5,  "geriatrics", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
+  6,  "other", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
+) 
+
+resq_merge <- resq_tibble %>%
+  group_by(department_type) %>%
+  left_join(resq_data, resq_tibble, by=c("department_type"))
 ```
 
