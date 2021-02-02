@@ -178,5 +178,8 @@ summary(resq_data$department_type)
 #merging department_type with resq dataset
 resq_merge <- trib_department_type %>%
   left_join(resq_data, trib_department_type, by="department_type")
+
+resq_merge <- trib_hosp_in %>%
+  left_join(resq_data, trib_hosp_in, by="hospitalized_in")
 ```
 
