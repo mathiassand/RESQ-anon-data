@@ -8,6 +8,8 @@ knitr::opts_chunk$set(echo = TRUE)
 library(readxl)
 library(tidyverse)
 library(tibble)
+library(skimr)
+library(magrittr)
 ```
 
 ## Including Plots
@@ -15,20 +17,166 @@ library(tibble)
 You can also embed plots, for example:
 
 ```{r load_data, echo=FALSE}
+#loading resq dataset
 resq_data <- read_excel("resq-raw-data/sample_hospital.xlsx")
 
-resq_tibble<-tribble(
-~department_type, ~DeptTypeStr, ~hospitalized_in, ~hospital_days, ~stroke_type, ~nihss, ~nihss_score, ~ct_mri, ~ct_time, ~recanalization_procedures, ~dysphagia_screening, ~afib_flutter, ~antithrombotics, ~statin, ~smoking_cessation, ~antihypertensive, ~discharge_destination, ~discharge_mrs, ~discharge_date, ~door_to_needle, ~door_to_groin,
-  1, "neurology", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
-  2,  "neurosurgery", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
-  3,  "anesthesiology/resusccitation/critical care department", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
-  4,  "internal medicine", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
-  5,  "geriatrics", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
-  6,  "other", NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
+#checking what rows that include NA values
+resq_data %>%
+  summarise_all(funs(sum(is.na(.)))) %>%
+  pivot_longer(everything()) %>%
+  filter(value > 0)
+
+#replacing NA's with zero's
+resq_data %<>%
+  replace(is.na(.), 99)
+
+
+#creating tribbles for each variable/legend
+trib_department_type<-tribble(
+~department_type, ~DeptTypeStr, 
+  1, "neurology",  
+  2, "neurosurgery", 
+  3, "anesthesiology/resusccitation/critical care department",  
+  4, "internal medicine", 
+  5, "geriatrics",  
+  6,  "other",
+  99, "NULL",
 ) 
 
-resq_merge <- resq_tibble %>%
-  group_by(department_type) %>%
-  left_join(resq_data, resq_tibble, by=c("department_type"))
+trib_hosp_in<-tribble(
+  ~hospitalized_in, ~HospInStr,
+  1, "Stroke unit/ICU",
+  2, "Other monitored bed (telemetry)",
+  3, "Standard bed",
+)
+
+trib_stroke_type<-tribble(
+  ~stroke_type, ~StrokeTypeStr,
+  1, "Ischemic Stroke",
+  2, "Intracerebral hemorrhage",
+  3, "Transient ischemic attack - TIA",
+  4, "Subarachnoid hemorrhage",
+  5, "Cerebral venous thrombosis",
+  6, "Undetermined"
+)
+
+trib_NIHSS<-tribble(
+  ~nihss, ~NIHSSStr,
+  1, "Not performed",
+  2, "Performed", 
+  3, "Not known",
+)
+
+#just checking if nihss_score actually is numeric - stated as a text in resq data legend tab in excel
+#class(resq_data$nihss_score)
+
+trib_CT_MRI<-tribble(
+  ~ct_mri, ~CTMRIStr,
+  1, "Not performed",
+  2, "Performed",
+  3, "Not known",
+)
+
+trib_CT_Time<-tribble(
+  ~ct_time, ~ctTimeStr,
+  1, "Within 1 hour after admission",
+  2, "Later than 1 hour after admission",
+)
+
+trib_recanalization_procedures<-tribble(
+  ~recanalization_procedures, ~RecanProcStr,
+  1, "Not done - primary centre / comprehensive centre",
+  2, "IV tPa - primary centre / comprehensive centre",
+  3, "IV tPa + endovascular treatment - comprehensive centre",
+  4, "Endovascular treatment alone - comprehensive centre",
+  5, "IV tPa + referred to another centre for endovascular treatment - primary centre",
+  6, "Referred to another centre for endovascular treatment - primary centre",
+  7, "Patient referred to another centre for endovascular treatment and hospitalization continues at the referred to centre - comprehensive centre",
+  8, "Patient referred for endovascular treatment and patient is returned to the initial centre - comprehensive centre",
+  9, "Patient was returned to the initial centre after recanalization procedures were performed at another centre", 
+)
+
+trib_dysphagia_screening<-tribble(
+  ~dysphagia_screening, ~DysphagiaStr,
+  1, "Yes/Guss test",
+  2, "Yes/other test",
+  3, "Was performed at another center",
+  4, "No",
+  5, "Patient could not be tested(intubated)",
+  6, "Not known",
+)
+
+trib_afib_flutter<-tribble(
+  ~afib_flutter, ~AfibFlutterStr,
+  1, "Known aFib", 
+  2, "Newly-detected at admission",
+  3, "Detected during hospilization",
+  4, "Not detected",
+  5, "Not known",
+)
+
+trib_antithrombotics<-tribble(
+  ~antithrombotics, ~AntithromboticsStr,
+  1, "antiplatelets",
+  2, "Vitamin K antagonist",
+  3, "dabigratan",
+  4, "rivaroxaban",
+  5, "apixaban",
+  6, "edoxaban",
+  7, "LMWH or heparin in prophylactic dose",
+  8, "LMWH or heparin in full anticoagulant dose",
+  9, "Not prescriped\but recommended",
+  10, "Nothing",
+)
+
+trib_statin<-tribble(
+  ~statin, ~StatinStr,
+  1, "Yes",
+  2, "No",
+  3, "Not known",
+)
+
+trib_smoking_cessation<-tribble(
+  ~smoking_cessation, ~SmokingCessationStr,
+  1, "Yes",
+  2, "No",
+  3, "Not a smoker",
+)
+
+trib_antihypertensive<-tribble(
+  ~antihypertensive, ~AntihypertensiveStr,
+  1, "Yes",
+  2, "No",
+  3, "Not known",
+)
+
+trib_discharge_dest<-tribble(
+  ~discharge_destination, ~DistDestStr,
+  1, "Home",
+  2, "Transferred within the same centre",
+  3, "Transferred to another centre",
+  4, "Social care facility",
+  5, "Dead",
+)
+
+trib_discharge_mrs<-tribble(
+  ~discharge_mrs, ~DistMRSStr,
+  1, "unknown/calculate",
+  2, "0",
+  3, "1",
+  4, "2",
+  5, "3",
+  6, "4",
+  7, "5",
+  8, "6",
+)
+
+#getting a summary of the resq data
+skim(resq_data)
+summary(resq_data$department_type)
+
+#merging department_type with resq dataset
+resq_merge <- trib_department_type %>%
+  left_join(resq_data, trib_department_type, by="department_type")
 ```
 
