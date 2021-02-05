@@ -10,6 +10,7 @@ library(tidyverse)
 library(tibble)
 library(skimr)
 library(magrittr)
+library(purrr)
 ```
 
 ## Including Plots
@@ -42,7 +43,7 @@ trib_department_type<-tribble(
   4, "internal medicine", 
   5, "geriatrics",  
   6,  "other",
-  99, "NULL",
+  99, "Unknown",
 ) 
 
 trib_hosp_in<-tribble(
@@ -50,7 +51,7 @@ trib_hosp_in<-tribble(
   1, "Stroke unit/ICU",
   2, "Other monitored bed (telemetry)",
   3, "Standard bed",
-  99, "NULL",
+  99, "Not applicable",
 )
 
 trib_stroke_type<-tribble(
@@ -61,7 +62,7 @@ trib_stroke_type<-tribble(
   4, "Subarachnoid hemorrhage",
   5, "Cerebral venous thrombosis",
   6, "Undetermined",
-  99, "NULL",
+  99, "Not applicable",
 )
 
 trib_NIHSS<-tribble(
@@ -69,7 +70,7 @@ trib_NIHSS<-tribble(
   1, "Not performed",
   2, "Performed", 
   3, "Not known",
-  99, "NULL",
+  99, "Unknown",
 )
 
 trib_CT_MRI<-tribble(
@@ -77,14 +78,14 @@ trib_CT_MRI<-tribble(
   1, "Not performed",
   2, "Performed",
   3, "Not known",
-  99, "NULL",
+  99, "Not applicable",
 )
 
 trib_CT_Time<-tribble(
   ~ct_time, ~ctTimeStr,
   1, "Within 1 hour after admission",
   2, "Later than 1 hour after admission",
-  99, "NULL",
+  99, "Not applicable",
 )
 
 trib_recanalization_procedures<-tribble(
@@ -98,7 +99,7 @@ trib_recanalization_procedures<-tribble(
   7, "Patient referred to another centre for endovascular treatment and hospitalization continues at the referred to centre - comprehensive centre",
   8, "Patient referred for endovascular treatment and patient is returned to the initial centre - comprehensive centre",
   9, "Patient was returned to the initial centre after recanalization procedures were performed at another centre", 
-  99, "NULL",
+  99, "Not applicable",
 )
 
 trib_dysphagia_screening<-tribble(
@@ -109,7 +110,7 @@ trib_dysphagia_screening<-tribble(
   4, "No",
   5, "Patient could not be tested(intubated)",
   6, "Not known",
-  99, "NULL",
+  99, "Not applicable",
 )
 
 trib_afib_flutter<-tribble(
@@ -119,7 +120,7 @@ trib_afib_flutter<-tribble(
   3, "Detected during hospilization",
   4, "Not detected",
   5, "Not known",
-  99, "NULL",
+  99, "Not applicable",
 )
 
 trib_antithrombotics<-tribble(
@@ -134,7 +135,7 @@ trib_antithrombotics<-tribble(
   8, "LMWH or heparin in full anticoagulant dose",
   9, "Not prescriped\but recommended",
   10, "Nothing",
-  99, "NULL",
+  99, "Not applicable",
 )
 
 trib_statin<-tribble(
@@ -142,7 +143,7 @@ trib_statin<-tribble(
   1, "Yes",
   2, "No",
   3, "Not known",
-  99, "NULL",
+  99, "Not applicable",
 )
 
 trib_smoking_cessation<-tribble(
@@ -150,7 +151,7 @@ trib_smoking_cessation<-tribble(
   1, "Yes",
   2, "No",
   3, "Not a smoker",
-  99, "NULL",
+  99, "Unknown",
 )
 
 trib_antihypertensive<-tribble(
@@ -158,7 +159,7 @@ trib_antihypertensive<-tribble(
   1, "Yes",
   2, "No",
   3, "Not known",
-  99, "NULL",
+  99, "Not applicable",
 )
 
 trib_discharge_dest<-tribble(
@@ -168,7 +169,7 @@ trib_discharge_dest<-tribble(
   3, "Transferred to another centre",
   4, "Social care facility",
   5, "Dead",
-  99, "NULL",
+  99, "Not applicable",
 )
 
 trib_discharge_mrs<-tribble(
@@ -181,7 +182,7 @@ trib_discharge_mrs<-tribble(
   6, "4",
   7, "5",
   8, "6",
-  99, "NULL",
+  99, "Not Applicable",
 )
 
 #getting a summary of the resq data
@@ -234,6 +235,26 @@ resq_merge <- trib_discharge_mrs %>%
 
 resq_merge <- trib_discharge_dest %>%
   left_join(resq_merge, trib_discharge_dest, by="discharge_destination")
+
+# merged_data<-list(resq_data,
+#                  trib_department_type,
+#                  trib_hosp_in,
+#                  trib_stroke_type,
+#                  trib_NIHSS,
+#                  trib_CT_MRI,
+#                  trib_CT_Time,
+#                  trib_recanalization_procedures,
+#                  trib_dysphagia_screening,
+#                  trib_afib_flutter,
+#                  trib_antithrombotics,
+#                  trib_statin,
+#                  trib_smoking_cessation,
+#                  trib_antihypertensive,
+#                  trib_discharge_dest,
+#                  trib_discharge_mrs) %>%
+#  reduce(left_join, by="subject_id")
+  
+
 ```
 
 ```{r visualizations, echo=FALSE}
