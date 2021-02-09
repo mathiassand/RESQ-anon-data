@@ -213,7 +213,7 @@ resq_merge <- resq_data %>%
 
 30 Day Mortality Rate
 ```{r visualizations, echo=FALSE}
-resq_merge %<>%
+resq_mort<-resq_merge %>%
   group_by(subject_id)%>%
   mutate(
     within30DayMort = if_else(hospital_days <= 30 && DistDestStr == "Dead", "Dead", "Alive"), 
