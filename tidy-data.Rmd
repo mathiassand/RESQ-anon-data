@@ -190,75 +190,22 @@ skim(resq_data)
 summary(resq_data$department_type)
 
 # you don't need to add trib_department_type to the left_join... 
-# resq_merge <- resq_data %>%
-#   left_join(trib_department_type, by="department_type") %>%
-#   left_join(trib_hosp_in, by="hospitalized_in") %>% ....
-
-
-#merging department_type with resq dataset
-resq_merge <- trib_department_type %>%
-  left_join(resq_data, trib_department_type, by="department_type")
-
-#throwing everything into resq dataset
-resq_merge <- trib_hosp_in %>%
-  left_join(resq_merge, trib_hosp_in, by="hospitalized_in")
-
-resq_merge <- trib_stroke_type %>%
-  left_join(resq_merge, trib_stroke_type, by="stroke_type")
-
-resq_merge <- trib_NIHSS %>%
-  left_join(resq_merge, trib_NIHSS, by="nihss")
-
-resq_merge <- trib_CT_MRI %>%
-  left_join(resq_merge, trib_CT_MRI, by="ct_mri")
-
-resq_merge <- trib_CT_Time %>%
-  left_join(resq_merge, trib_CT_Time, by="ct_time")
-
-resq_merge <- trib_recanalization_procedures %>%
-  left_join(resq_merge, trib_recanalization_procedures, by="recanalization_procedures")
-
-resq_merge <- trib_dysphagia_screening %>%
-  left_join(resq_merge, trib_dysphagia_screening, by="dysphagia_screening")
-
-resq_merge <- trib_afib_flutter %>%
-  left_join(resq_merge, trib_afib_flutter, by="afib_flutter")
-
-resq_merge <- trib_antithrombotics %>%
-  left_join(resq_merge, trib_antithrombotics, by="antithrombotics")
-
-resq_merge <- trib_statin %>%
-  left_join(resq_merge, trib_statin, by="statin")
-
-resq_merge <- trib_smoking_cessation %>%
-  left_join(resq_merge, trib_smoking_cessation, by="smoking_cessation")
-
-resq_merge <- trib_antihypertensive %>%
-  left_join(resq_merge, trib_antihypertensive, by="antihypertensive")
-
-resq_merge <- trib_discharge_mrs %>%
-  left_join(resq_merge, trib_discharge_mrs, by="discharge_mrs")
-
-resq_merge <- trib_discharge_dest %>%
-  left_join(resq_merge, trib_discharge_dest, by="discharge_destination")
-
-# merged_data<-list(resq_data,
-#                  trib_department_type,
-#                  trib_hosp_in,
-#                  trib_stroke_type,
-#                  trib_NIHSS,
-#                  trib_CT_MRI,
-#                  trib_CT_Time,
-#                  trib_recanalization_procedures,
-#                  trib_dysphagia_screening,
-#                  trib_afib_flutter,
-#                  trib_antithrombotics,
-#                  trib_statin,
-#                  trib_smoking_cessation,
-#                  trib_antihypertensive,
-#                  trib_discharge_dest,
-#                  trib_discharge_mrs) %>%
-#  reduce(left_join, by="subject_id")
+resq_merge <- resq_data %>%
+  left_join(trib_department_type, by="department_type") %>%
+  left_join(trib_hosp_in, by="hospitalized_in") %>%
+  left_join(trib_stroke_type, by="stroke_type") %>%
+  left_join(trib_NIHSS, by="nihss") %>%
+  left_join(trib_CT_MRI, by="ct_mri") %>% 
+  left_join(trib_CT_Time, by="ct_time") %>%
+  left_join(trib_recanalization_procedures, by="recanalization_procedures") %>%
+  left_join(trib_dysphagia_screening, by="dysphagia_screening") %>%
+  left_join(trib_afib_flutter, by="afib_flutter") %>% 
+  left_join(trib_antithrombotics, by="antithrombotics") %>%
+  left_join(trib_statin, by="statin") %>%
+  left_join(trib_smoking_cessation, by="smoking_cessation") %>% 
+  left_join(trib_antihypertensive, by="antihypertensive") %>% 
+  left_join(trib_discharge_mrs, by="discharge_mrs") %>% 
+  left_join(trib_discharge_dest, by="discharge_destination") 
   
 
 ```
