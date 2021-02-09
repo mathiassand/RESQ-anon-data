@@ -210,7 +210,22 @@ resq_merge <- resq_data %>%
 
 ```
 
-```{r visualizations, echo=FALSE}
 
+30 Day Mortality Rate
+```{r visualizations, echo=FALSE}
+resq_merge %>%
+  select(subject_id, hospital_days, DistDestStr) %>%
+  group_by(subject_id)%>%
+  mutate(
+    within30DayMort = "Alive"
+  )%>%
+  filter(hospital_days <= 30, DistDestStr == "Dead") %>%
+  mutate(
+    within30DayMort = "Dead"
+  )%>%
+  select (-c(subject_id, hospital_days, DistDestStr))
+  
+  
 ```
+
 
