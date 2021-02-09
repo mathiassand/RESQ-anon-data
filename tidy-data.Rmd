@@ -189,6 +189,12 @@ trib_discharge_mrs<-tribble(
 skim(resq_data)
 summary(resq_data$department_type)
 
+# you don't need to add trib_department_type to the left_join... 
+# resq_merge <- resq_data %>%
+#   left_join(trib_department_type, by="department_type") %>%
+#   left_join(trib_hosp_in, by="hospitalized_in") %>% ....
+
+
 #merging department_type with resq dataset
 resq_merge <- trib_department_type %>%
   left_join(resq_data, trib_department_type, by="department_type")
