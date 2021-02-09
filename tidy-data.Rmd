@@ -108,7 +108,7 @@ trib_dysphagia_screening<-tribble(
   2, "Yes/other test",
   3, "Was performed at another center",
   4, "No",
-  5, "Patient could not be tested(intubated)",
+  5, "Patient could not be tested (intubated)",
   6, "Not known",
   99, "Not applicable",
 )
@@ -213,12 +213,14 @@ resq_merge <- resq_data %>%
 
 30 Day Mortality Rate
 ```{r visualizations, echo=FALSE}
-resq_mort<-resq_merge %>%
-  group_by(subject_id)%>%
+resq_merge<-resq_merge %>%
   mutate(
-    within30DayMort = if_else(hospital_days <= 30 && DistDestStr == "Dead", "Dead", "Alive"), 
+    within30DayMort = if_else(hospital_days > 30 | (hospital_days < 30 &DistDestStr != "Dead"), 0, 1), 
   ) 
   
+df<-resq_merge
+df %>% dplyr::group_by(discharge_date) %>% summarise(Mortality30d =mean(within30DayMort))
+
 ```
 
 
