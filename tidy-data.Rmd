@@ -215,7 +215,7 @@ resq_merge <- resq_data %>%
 ```{r visualizations, echo=FALSE}
 resq_merge<-resq_merge %>%
   mutate(
-    within30DayMort = if_else(hospital_days > 30 | (hospital_days < 30 &DistDestStr != "Dead"), 0, 1), 
+    within30DayMort = if_else( (hospital_days <= 30 & DistDestStr == "Dead"), 1, 0), 
   ) 
   
 df<-resq_merge
