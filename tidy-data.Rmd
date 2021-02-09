@@ -211,7 +211,7 @@ resq_merge <- resq_data %>%
 ```
 
 
-30 Day Mortality Rate
+30 Day Mortality Rate. Being assigned a value of 1 = dead, 0 = alive.
 ```{r visualizations, echo=FALSE}
 resq_merge<-resq_merge %>%
   mutate(
