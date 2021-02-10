@@ -221,35 +221,141 @@ resq_mort<-resq_merge %>%
 resq_mort %<>%
   dplyr::group_by(discharge_date)%>%
   mutate(
-    Mortality30d = mean(within30DayMort)
+    Mortality30dMean = mean(within30DayMort) * 100,
+    DTNMean = mean(replace(door_to_needle, door_to_needle==99, NA), na.rm = TRUE),
+    DTNMedian = median(replace(door_to_needle, door_to_needle==99, NA), na.rm = TRUE),
+    DTGMean = mean(replace(door_to_groin, door_to_groin==99, NA), na.rm = TRUE),
+    DTGMedian = median(replace(door_to_groin, door_to_groin==99, NA), na.rm = TRUE),
+    DISMRSMean = mean(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),
+    DISMRSMedian = median(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE)
   ) 
 
-#df<-resq_mort %>% dplyr::group_by(discharge_date) %>% summarise(Mortality30d =mean(within30DayMort))
+#df<-resq_mort %>% dplyr::group_by(discharge_date) %>% summarise(Mortality30d =mean(within30DayMort), DTNMean = mean(door_to_needle))
 
 
 # THERE IS NO DTN/DTG DATA IN 2020, IT IS EMPTY IN RAW DATA AS WELL
 
-p_dtn <- ggplot(resq_mort[resq_mort$door_to_needle<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = door_to_needle, color=as.factor(discharge_date))) + geom_boxplot() + geom_jitter() + theme_bw()
+########## TREND LINES ########## 
+p_trend_mort <- ggplot(resq_mort[resq_mort$discharge_date<2201,], 
+aes(x = discharge_date, y = Mortality30dMean)) + 
+  geom_line() + 
+  theme_bw() + 
+  ylab("Mortality rate") +
+  expand_limits(y=0)
+
+p_trend_mort 
+
+p_trend_DTN <- ggplot(resq_mort[resq_mort$door_to_needle<99 & resq_mort$discharge_date<2201,], 
+aes(x = discharge_date, y = DTNMean, color="Mean")) + 
+  geom_violin(aes(x = discharge_date, y = door_to_needle, color=as.factor(discharge_date)), alpha=.4) +
+  geom_line() + 
+  geom_line(aes(y = DTNMedian, color = "Median")) +
+  theme_bw() + 
+  ylab("Door-to-needle") +
+  xlab("Discharge Date") +
+  expand_limits(y=0)
+
+p_trend_DTN
+
+p_trend_DTG <- ggplot(resq_mort[resq_mort$door_to_groin<99 & resq_mort$discharge_date<2201,], 
+aes(x = discharge_date, y = DTGMean, color="Mean")) + 
+  geom_violin(aes(x = discharge_date, y = door_to_groin, color=as.factor(discharge_date)), alpha=.4) +
+  geom_line() + 
+  geom_line(aes(y = DTGMedian, color = "Median")) +
+  theme_bw() + 
+  ylab("Door-to-groin") +
+  xlab("Discharge Date") +
+  expand_limits(y=0)
+
+p_trend_DTG
+
+p_mort_vs_DTN <- ggplot(resq_mort[resq_mort$door_to_needle<99,], 
+aes(y = Mortality30dMean, x = DTNMean, color="Mean")) + 
+  geom_line() + 
+  theme_bw() + 
+  ylab("Mortality rate") + 
+  xlab("Door-to-needle") + 
+  expand_limits(y=0)
+
+p_mort_vs_DTN
+
+p_mort_vs_DTG <- ggplot(resq_mort[resq_mort$door_to_needle<99,], 
+aes(y = Mortality30dMean, x = DTGMean, color="Mean")) + 
+  geom_line() + 
+  theme_bw() + 
+  ylab("Mortality rate") + 
+  xlab("Door-to-groin") +
+  expand_limits(y=0)
+
+p_mort_vs_DTG
+
+p_mort_vs_dismrs <- ggplot(resq_mort[resq_mort$discharge_mrs<99,], 
+aes(y = Mortality30dMean, x = DISMRSMean, color="Mean")) + 
+  geom_line() + 
+  theme_bw() + 
+  ylab("Mortality rate") + 
+  xlab("Discharge mrs") +
+  expand_limits(y=0)
+
+p_mort_vs_dismrs
+
+p_trend_dismrs <- ggplot(resq_mort[resq_mort$discharge_mrs<99 & resq_mort$discharge_date<2201,], 
+aes(x = discharge_date, y = DISMRSMean, color="Mean")) + 
+  geom_violin(aes(x = discharge_date, y = discharge_mrs, color=as.factor(discharge_date)), alpha=.4) +
+  geom_line() + 
+  geom_line(aes(y = DISMRSMedian, color = "Median")) +
+  theme_bw() + 
+  ylab("Discharge mrs") +
+  xlab("Discharge Date") +
+  expand_limits(y=0)
+
+p_trend_dismrs
 
 
-p_dtg <- ggplot(resq_mort[resq_mort$door_to_groin<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = door_to_groin, color=as.factor(discharge_date))) + geom_boxplot() + geom_jitter() + theme_bw()
 
-#NIHSS score is not really a KPI though
-p_nihss_score_jitter <- ggplot(resq_mort[resq_mort$nihss_score<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = nihss_score, color=as.factor(discharge_date))) + geom_violin() + geom_jitter() + theme_bw()
-
-p_nihss_score <- ggplot(resq_mort[resq_mort$nihss_score<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = nihss_score, color=as.factor(discharge_date))) + geom_violin() + theme_bw()
-
-#this might have way too many dots to show. decreases readability
-p_dis_mrs_jitter <- ggplot(resq_mort[resq_mort$discharge_mrs>1 & resq_mort$discharge_mrs<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = discharge_mrs, color=as.factor(discharge_date))) + geom_violin() + geom_jitter() + theme_bw()
-
-p_dis_mrs <- ggplot(resq_mort[resq_mort$discharge_mrs>1 & resq_mort$discharge_mrs<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = discharge_mrs, color=as.factor(discharge_date))) + geom_violin() + theme_bw()
-
-p_dtn
-p_dtg
-p_nihss_score
-p_nihss_score_jitter
-p_dis_mrs
-p_dis_mrs_jitter
+########## MAYBE USEFUL IDK? ########## 
+# p_dtn <- ggplot(resq_mort[resq_mort$door_to_needle<99 & resq_mort$discharge_date<2201 & resq_mort$discharge_date>2017,], aes(x = door_to_needle, y = Mortality30dMean, color=as.factor(discharge_date))) +
+#   geom_boxplot() + 
+#   geom_jitter(alpha=.4) + 
+#   geom_point(aes(x=DTNMean), size = 4) + 
+#   theme_bw() 
+# 
+# p_dtn
+# 
+# p_dtg <- ggplot(resq_mort[resq_mort$door_to_groin<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30dMean, y = door_to_groin, color=as.factor(discharge_date))) + 
+#   geom_boxplot() + 
+#   geom_jitter() + 
+#   theme_bw()
+# 
+# p_dtg
+# 
+# #NIHSS score is not really a KPI though
+# p_nihss_score_jitter <- ggplot(resq_mort[resq_mort$nihss_score<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30dMean, y = nihss_score, color=as.factor(discharge_date))) + 
+#   geom_violin() + 
+#   geom_jitter() + 
+#   theme_bw()
+# 
+# p_nihss_score_jitter
+# 
+# p_nihss_score <- ggplot(resq_mort[resq_mort$nihss_score<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30dMean, y = nihss_score, color=as.factor(discharge_date))) + 
+#   geom_violin() + 
+#   theme_bw()
+# 
+# p_nihss_score
+# 
+# #this might have way too many dots to show. decreases readability
+# p_dis_mrs_jitter <- ggplot(resq_mort[resq_mort$discharge_mrs>1 & resq_mort$discharge_mrs<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30dMean, y = discharge_mrs, color=as.factor(discharge_date))) +
+#   geom_violin() + 
+#   geom_jitter() + 
+#   theme_bw()
+# 
+# p_dis_mrs_jitter
+# 
+# p_dis_mrs <- ggplot(resq_mort[resq_mort$discharge_mrs>1 & resq_mort$discharge_mrs<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30dMean, y = discharge_mrs, color=as.factor(discharge_date))) +
+#   geom_violin() + 
+#   theme_bw()
+# 
+# p_dis_mrs
 
 ```
 
