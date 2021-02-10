@@ -234,6 +234,7 @@ p_dtn <- ggplot(resq_mort[resq_mort$door_to_needle<99 & resq_mort$discharge_date
 
 p_dtg <- ggplot(resq_mort[resq_mort$door_to_groin<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = door_to_groin, color=as.factor(discharge_date))) + geom_boxplot() + geom_jitter() + theme_bw()
 
+#NIHSS score is not really a KPI though
 p_nihss_score_jitter <- ggplot(resq_mort[resq_mort$nihss_score<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = nihss_score, color=as.factor(discharge_date))) + geom_violin() + geom_jitter() + theme_bw()
 
 p_nihss_score <- ggplot(resq_mort[resq_mort$nihss_score<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = nihss_score, color=as.factor(discharge_date))) + geom_violin() + theme_bw()
