@@ -212,15 +212,31 @@ resq_merge <- resq_data %>%
 
 
 30 Day Mortality Rate
-```{r visualizations, echo=FALSE}
-resq_merge<-resq_merge %>%
+```{r mortality, echo=FALSE}
+resq_mort<-resq_merge %>%
   mutate(
-    within30DayMort = if_else( (hospital_days <= 30 & DistDestStr == "Dead"), 1, 0), 
+    within30DayMort = if_else((hospital_days <= 30 & DistDestStr == "Dead"), 1, 0), 
   ) 
   
-df<-resq_merge
-df %>% dplyr::group_by(discharge_date) %>% summarise(Mortality30d =mean(within30DayMort))
+resq_mort %<>%
+  dplyr::group_by(discharge_date)%>%
+  mutate(
+    Mortality30d = mean(within30DayMort)
+  ) 
 
+#df<-resq_mort %>% dplyr::group_by(discharge_date) %>% summarise(Mortality30d =mean(within30DayMort))
+
+
+
+p_dtn <- ggplot(resq_mort[resq_mort$door_to_needle<99,], aes(x = Mortality30d, y = door_to_needle, color=as.factor(discharge_date))) + geom_boxplot() + geom_jitter() + theme_bw()
+
+
+p_dtg <- ggplot(resq_mort[resq_mort$door_to_groin<99,], aes(x = Mortality30d, y = door_to_groin, color=as.factor(discharge_date))) + geom_boxplot() + geom_jitter() + theme_bw()
+
+
+
+p_dtn
+p_dtg
 ```
 
 
