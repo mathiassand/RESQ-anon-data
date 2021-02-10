@@ -227,16 +227,26 @@ resq_mort %<>%
 #df<-resq_mort %>% dplyr::group_by(discharge_date) %>% summarise(Mortality30d =mean(within30DayMort))
 
 
+# THERE IS NO DTN/DTG DATA IN 2020, IT IS EMPTY IN RAW DATA AS WELL
 
-p_dtn <- ggplot(resq_mort[resq_mort$door_to_needle<99,], aes(x = Mortality30d, y = door_to_needle, color=as.factor(discharge_date))) + geom_boxplot() + geom_jitter() + theme_bw()
-
-
-p_dtg <- ggplot(resq_mort[resq_mort$door_to_groin<99,], aes(x = Mortality30d, y = door_to_groin, color=as.factor(discharge_date))) + geom_boxplot() + geom_jitter() + theme_bw()
+p_dtn <- ggplot(resq_mort[resq_mort$door_to_needle<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = door_to_needle, color=as.factor(discharge_date))) + geom_boxplot() + geom_jitter() + theme_bw()
 
 
+p_dtg <- ggplot(resq_mort[resq_mort$door_to_groin<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = door_to_groin, color=as.factor(discharge_date))) + geom_boxplot() + geom_jitter() + theme_bw()
+
+p_nihss_score <- ggplot(resq_mort[resq_mort$nihss_score<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = nihss_score, color=as.factor(discharge_date))) + geom_violin() + geom_jitter() + theme_bw()
+
+#this might have way too many dots to show. decreases readability
+p_dis_mrs_jitter <- ggplot(resq_mort[resq_mort$discharge_mrs>1 & resq_mort$discharge_mrs<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = discharge_mrs, color=as.factor(discharge_date))) + geom_boxplot() + geom_jitter() + theme_bw()
+
+p_dis_mrs <- ggplot(resq_mort[resq_mort$discharge_mrs>1 & resq_mort$discharge_mrs<99 & resq_mort$discharge_date<2201,], aes(x = Mortality30d, y = discharge_mrs, color=as.factor(discharge_date))) + geom_boxplot() + theme_bw()
 
 p_dtn
 p_dtg
+p_nihss_score
+p_dis_mrs
+p_dis_mrs_jitter
+
 ```
 
 
