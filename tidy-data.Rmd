@@ -211,8 +211,8 @@ resq_merge <- resq_data %>%
 ```
 
 
-30 Day Mortality Rate
-```{r mortality, echo=FALSE}
+30 Day Mortality Rate. Being assigned a value of 1 = dead, 0 = alive.
+```{r mortal ity, echo=FALSE}
 resq_mort<-resq_merge %>%
   mutate(
     within30DayMort = if_else((hospital_days <= 30 & DistDestStr == "Dead"), 1, 0), 
