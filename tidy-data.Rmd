@@ -296,7 +296,7 @@ aes(y = Mortality30dMean, x = DTNMean)) +
 p_mort_vs_DTN 
 
 p_mort_vs_DTG <- ggplot(df, 
-aes(y = Mortality30dMean, x = DTGMean, color="Mean")) + 
+aes(y = Mortality30dMean, x = DTGMean)) + 
   geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
   geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) +
   theme_classic() +
@@ -316,6 +316,29 @@ aes(y = Mortality30dMean, x = DTGMean, color="Mean")) +
   annotation_custom(testText)
 
 p_mort_vs_DTG
+
+p_mRS_vs_DTG <- ggplot(df, 
+aes(y = DISMRSMean, x = DTGMean)) + 
+  geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
+  geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) +
+  theme_classic() +
+  ylab("Discharge mRS") + 
+  xlab("Door to groin") +
+  expand_limits(y=0) +
+  xlim(62, 63) +
+  geom_text_repel(aes(label=round(DISMRSMean, digits=2)), hjust = 0, color = "#0F85C8" ) +
+    labs(
+    title = "<span style = 'color: #0F85C8;'>Discharge mRS</span> against door to groin evolution"
+  ) +
+  theme(
+    plot.title = element_markdown(),
+    axis.title.x = element_text(hjust=0.025, vjust=0.2),
+    axis.title.y = element_text(hjust=0.95, vjust=0.77),
+    plot.caption = element_text(hjust=0, size=6),
+    ) +
+  annotation_custom(testText)
+
+p_mRS_vs_DTG
 
 p_violin_DTN <- ggplot(resq_mort[resq_mort$door_to_needle<99 & resq_mort$discharge_date<2201,], 
 aes(x = discharge_date, y = DTNMean_m, color="Mean")) + 
