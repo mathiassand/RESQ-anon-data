@@ -13,6 +13,7 @@ library(magrittr)
 library(purrr)
 library(ggtext)
 library(grid)
+library(ggrepel)
 ```
 
 ## Including Plots
@@ -220,29 +221,38 @@ resq_mort<-resq_merge %>%
     within30DayMort = if_else((hospital_days <= 30 & DistDestStr == "Dead"), 1, 0), 
   ) 
   
-resq_mort %<>%
-  dplyr::group_by(discharge_date)%>%
-  mutate(
-    Mortality30dMean = mean(within30DayMort) * 100,
-    DTNMean = mean(replace(door_to_needle, door_to_needle==99, NA), na.rm = TRUE),
+# resq_mort %<>%
+#   dplyr::group_by(discharge_date)%>%
+#   mutate(
+#     Mortality30dMean = mean(within30DayMort) * 100,
+#     DTNMean = mean(replace(door_to_needle, door_to_needle==99, NA), na.rm = TRUE),
+#     DTNMedian = median(replace(door_to_needle, door_to_needle==99, NA), na.rm = TRUE),
+#     DTGMean = mean(replace(door_to_groin, door_to_groin==99, NA), na.rm = TRUE),
+#     DTGMedian = median(replace(door_to_groin, door_to_groin==99, NA), na.rm = TRUE),
+#     DISMRSMean = mean(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),
+#     DISMRSMedian = median(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),
+#   ) 
+
+
+df<-resq_mort %>% 
+  dplyr::group_by(discharge_date) %>% 
+  summarise(
+    Mortality30dMean =mean(within30DayMort) * 100, 
+    DTNMean = mean(replace(door_to_needle,door_to_needle==99, NA), na.rm = TRUE),
     DTNMedian = median(replace(door_to_needle, door_to_needle==99, NA), na.rm = TRUE),
     DTGMean = mean(replace(door_to_groin, door_to_groin==99, NA), na.rm = TRUE),
     DTGMedian = median(replace(door_to_groin, door_to_groin==99, NA), na.rm = TRUE),
     DISMRSMean = mean(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),
-    DISMRSMedian = median(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE)
-  ) 
-
-#df<-resq_mort %>% dplyr::group_by(discharge_date) %>% summarise(Mortality30d =mean(within30DayMort), DTNMean = mean(door_to_needle))
+    DISMRSMedian = median(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),)
 
 
 # THERE IS NO DTN/DTG DATA IN 2020, IT IS EMPTY IN RAW DATA AS WELL
 
 ########## TREND LINES ########## 
 
-testText <- grobTree(textGrob("Annotation testing", x=0.10, y=0.40, hjust=0, gp=gpar(col="grey", fontsize=13, fontface="italic")))
+testText <- grobTree(textGrob("Annotation testing", x=0.10, y=0.40, hjust=0, gp=gpar(col="black", fontsize=13, fontface="italic")))
 
-
-p_trend_mort <- ggplot(resq_mort[resq_mort$discharge_date<2201,], 
+p_trend_mort <- ggplot(df[df$discharge_date<2201,], 
 aes(x = discharge_date, y = Mortality30dMean)) + 
   geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
   geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) + 
@@ -250,7 +260,7 @@ aes(x = discharge_date, y = Mortality30dMean)) +
   ylab("Mortality rate") +
   xlab("Discharge date") +
   expand_limits(y=0) +
-  geom_text(aes(label=round(Mortality30dMean, digits = 2)), vjust = 2.5, color = "#0F85C8" ) +
+  geom_text_repel(aes(label=round(Mortality30dMean, digits=2)), color = "#0F85C8") +
   labs(
     title = "<span style = 'color: #0F85C8;'> Mortality rate</span> evolution"
   ) +
@@ -262,7 +272,7 @@ aes(x = discharge_date, y = Mortality30dMean)) +
     ) +
   annotation_custom(testText)
 
-p_trend_mort 
+p_trend_mort
 
 p_mort_vs_DTN <- ggplot(resq_mort[resq_mort$door_to_needle<99,], 
 aes(y = Mortality30dMean, x = DTNMean)) + 
