@@ -274,7 +274,7 @@ aes(y = Mortality30dMean, x = DTNMean)) +
   expand_limits(y=0) +
   geom_text(aes(label=round(Mortality30dMean, digits=2)), vjust = 2.5, color = "#0F85C8" ) +
     labs(
-    title = "Mortality rate against <span style = 'color: #0F85C8;'>Door to needle</span> evolution"
+    title = "<span style = 'color: #0F85C8;'>Mortality rate</span> against door to needle evolution"
   ) +
   theme(
     plot.title = element_markdown(),
@@ -296,7 +296,7 @@ aes(y = Mortality30dMean, x = DTGMean, color="Mean")) +
   expand_limits(y=0) +
   geom_text(aes(label=round(Mortality30dMean, digits=2)), vjust = 2.2, hjust = 0, color = "#0F85C8" ) +
     labs(
-    title = "Mortality rate against <span style = 'color: #0F85C8;'>Door to groin</span> evolution"
+    title = "<span style = 'color: #0F85C8;'>Mortality rate</span> against door to groin evolution"
   ) +
   theme(
     plot.title = element_markdown(),
@@ -315,10 +315,10 @@ aes(y = Mortality30dMean, x = DISMRSMean, color="Mean")) +
   theme_classic() + 
   expand_limits(y=0) +
   ylab("Mortality rate") + 
-  xlab("Discharge mrs") +
+  xlab("Discharge mRS") +
   geom_text(aes(label=round(Mortality30dMean, digits=2)), vjust = 2.5, color = "#0F85C8" ) +
     labs(
-    title = "Mortality rate against <span style = 'color: #0F85C8;'>Discharge mrs</span> evolution"
+    title = "<span style = 'color: #0F85C8;'>Mortality rate</span> against discharge mRS evolution"
   ) +
   theme(
     plot.title = element_markdown(),
@@ -339,7 +339,7 @@ aes(x = discharge_date, y = DTNMean, color="Mean")) +
   ylab("Door to needle") +
   xlab("Discharge date") +
   expand_limits(y=0) +
-  ggtitle("Door-to-needle evolution") +
+  ggtitle("Door to needle evolution") +
   theme(
     axis.title.x = element_text(hjust=0.15, vjust=0.2),
     axis.title.y = element_text(hjust=0.84, vjust=0.8),
