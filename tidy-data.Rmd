@@ -11,6 +11,8 @@ library(tibble)
 library(skimr)
 library(magrittr)
 library(purrr)
+library(ggtext)
+library(grid)
 ```
 
 ## Including Plots
@@ -236,24 +238,113 @@ resq_mort %<>%
 # THERE IS NO DTN/DTG DATA IN 2020, IT IS EMPTY IN RAW DATA AS WELL
 
 ########## TREND LINES ########## 
+
+testText <- grobTree(textGrob("Annotation testing", x=0.10, y=0.40, hjust=0, gp=gpar(col="grey", fontsize=13, fontface="italic")))
+
+
 p_trend_mort <- ggplot(resq_mort[resq_mort$discharge_date<2201,], 
 aes(x = discharge_date, y = Mortality30dMean)) + 
-  geom_line() + 
-  theme_bw() + 
+  geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
+  geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) + 
+  theme_classic() + 
   ylab("Mortality rate") +
-  expand_limits(y=0)
+  xlab("Discharge date") +
+  expand_limits(y=0) +
+  geom_text(aes(label=round(Mortality30dMean, digits = 2)), vjust = 2.5, color = "#0F85C8" ) +
+  labs(
+    title = "<span style = 'color: #0F85C8;'> Mortality rate</span> evolution"
+  ) +
+  theme(
+    plot.title = element_markdown(),
+    axis.title.x = element_text(hjust=0.03, vjust=0.2),
+    axis.title.y = element_text(hjust=0.77, vjust=0.77),
+    plot.caption = element_text(hjust=0, size=6),
+    ) +
+  annotation_custom(testText)
 
 p_trend_mort 
+
+p_mort_vs_DTN <- ggplot(resq_mort[resq_mort$door_to_needle<99,], 
+aes(y = Mortality30dMean, x = DTNMean)) + 
+  geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
+  geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) + 
+  theme_classic() +
+  ylab("Mortality rate") + 
+  xlab("Door to needle") +
+  expand_limits(y=0) +
+  geom_text(aes(label=round(Mortality30dMean, digits=2)), vjust = 2.5, color = "#0F85C8" ) +
+    labs(
+    title = "Mortality rate against <span style = 'color: #0F85C8;'>Door to needle</span> evolution"
+  ) +
+  theme(
+    plot.title = element_markdown(),
+    axis.title.x = element_text(hjust=0.2758, vjust=0.2),
+    axis.title.y = element_text(hjust=0.77, vjust=0.77),
+    plot.caption = element_text(hjust=0, size=6),
+    ) +
+  annotation_custom(testText)
+
+p_mort_vs_DTN
+
+p_mort_vs_DTG <- ggplot(resq_mort[resq_mort$door_to_needle<99,], 
+aes(y = Mortality30dMean, x = DTGMean, color="Mean")) + 
+  geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
+  geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) +
+  theme_classic() +
+  ylab("Mortality rate") + 
+  xlab("Door to groin") +
+  expand_limits(y=0) +
+  geom_text(aes(label=round(Mortality30dMean, digits=2)), vjust = 2.2, hjust = 0, color = "#0F85C8" ) +
+    labs(
+    title = "Mortality rate against <span style = 'color: #0F85C8;'>Door to groin</span> evolution"
+  ) +
+  theme(
+    plot.title = element_markdown(),
+    axis.title.x = element_text(hjust=0.29, vjust=0.2),
+    axis.title.y = element_text(hjust=0.77, vjust=0.77),
+    plot.caption = element_text(hjust=0, size=6),
+    ) +
+  annotation_custom(testText)
+
+p_mort_vs_DTG
+
+p_mort_vs_dismrs <- ggplot(resq_mort[resq_mort$discharge_mrs<99,], 
+aes(y = Mortality30dMean, x = DISMRSMean, color="Mean")) + 
+  geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
+  geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) +
+  theme_classic() + 
+  expand_limits(y=0) +
+  ylab("Mortality rate") + 
+  xlab("Discharge mrs") +
+  geom_text(aes(label=round(Mortality30dMean, digits=2)), vjust = 2.5, color = "#0F85C8" ) +
+    labs(
+    title = "Mortality rate against <span style = 'color: #0F85C8;'>Discharge mrs</span> evolution"
+  ) +
+  theme(
+    plot.title = element_markdown(),
+    axis.title.x = element_text(hjust=0.14, vjust=0.2),
+    axis.title.y = element_text(hjust=0.77, vjust=0.77),
+    plot.caption = element_text(hjust=0, size=6),
+    ) +
+  annotation_custom(testText)
+
+p_mort_vs_dismrs
 
 p_trend_DTN <- ggplot(resq_mort[resq_mort$door_to_needle<99 & resq_mort$discharge_date<2201,], 
 aes(x = discharge_date, y = DTNMean, color="Mean")) + 
   geom_violin(aes(x = discharge_date, y = door_to_needle, color=as.factor(discharge_date)), alpha=.4) +
-  geom_line() + 
+  geom_line() +
   geom_line(aes(y = DTNMedian, color = "Median")) +
-  theme_bw() + 
-  ylab("Door-to-needle") +
-  xlab("Discharge Date") +
-  expand_limits(y=0)
+  theme_classic() + 
+  ylab("Door to needle") +
+  xlab("Discharge date") +
+  expand_limits(y=0) +
+  ggtitle("Door-to-needle evolution") +
+  theme(
+    axis.title.x = element_text(hjust=0.15, vjust=0.2),
+    axis.title.y = element_text(hjust=0.84, vjust=0.8),
+    plot.caption = element_text(hjust = 0, size = 6),
+    )
 
 p_trend_DTN
 
@@ -263,41 +354,11 @@ aes(x = discharge_date, y = DTGMean, color="Mean")) +
   geom_line() + 
   geom_line(aes(y = DTGMedian, color = "Median")) +
   theme_bw() + 
-  ylab("Door-to-groin") +
-  xlab("Discharge Date") +
+  ylab("Door to groin") +
+  xlab("Discharge date") +
   expand_limits(y=0)
 
 p_trend_DTG
-
-p_mort_vs_DTN <- ggplot(resq_mort[resq_mort$door_to_needle<99,], 
-aes(y = Mortality30dMean, x = DTNMean, color="Mean")) + 
-  geom_line() + 
-  theme_bw() + 
-  ylab("Mortality rate") + 
-  xlab("Door-to-needle") + 
-  expand_limits(y=0)
-
-p_mort_vs_DTN
-
-p_mort_vs_DTG <- ggplot(resq_mort[resq_mort$door_to_needle<99,], 
-aes(y = Mortality30dMean, x = DTGMean, color="Mean")) + 
-  geom_line() + 
-  theme_bw() + 
-  ylab("Mortality rate") + 
-  xlab("Door-to-groin") +
-  expand_limits(y=0)
-
-p_mort_vs_DTG
-
-p_mort_vs_dismrs <- ggplot(resq_mort[resq_mort$discharge_mrs<99,], 
-aes(y = Mortality30dMean, x = DISMRSMean, color="Mean")) + 
-  geom_line() + 
-  theme_bw() + 
-  ylab("Mortality rate") + 
-  xlab("Discharge mrs") +
-  expand_limits(y=0)
-
-p_mort_vs_dismrs
 
 p_trend_dismrs <- ggplot(resq_mort[resq_mort$discharge_mrs<99 & resq_mort$discharge_date<2201,], 
 aes(x = discharge_date, y = DISMRSMean, color="Mean")) + 
@@ -306,7 +367,7 @@ aes(x = discharge_date, y = DISMRSMean, color="Mean")) +
   geom_line(aes(y = DISMRSMedian, color = "Median")) +
   theme_bw() + 
   ylab("Discharge mrs") +
-  xlab("Discharge Date") +
+  xlab("Discharge date") +
   expand_limits(y=0)
 
 p_trend_dismrs
