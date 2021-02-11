@@ -221,17 +221,17 @@ resq_mort<-resq_merge %>%
     within30DayMort = if_else((hospital_days <= 30 & DistDestStr == "Dead"), 1, 0), 
   ) 
   
-# resq_mort %<>%
-#   dplyr::group_by(discharge_date)%>%
-#   mutate(
-#     Mortality30dMean = mean(within30DayMort) * 100,
-#     DTNMean = mean(replace(door_to_needle, door_to_needle==99, NA), na.rm = TRUE),
-#     DTNMedian = median(replace(door_to_needle, door_to_needle==99, NA), na.rm = TRUE),
-#     DTGMean = mean(replace(door_to_groin, door_to_groin==99, NA), na.rm = TRUE),
-#     DTGMedian = median(replace(door_to_groin, door_to_groin==99, NA), na.rm = TRUE),
-#     DISMRSMean = mean(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),
-#     DISMRSMedian = median(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),
-#   ) 
+resq_mort %<>%
+  dplyr::group_by(discharge_date)%>%
+  mutate(
+    Mortality30dMean_m = mean(within30DayMort) * 100,
+    DTNMean_m = mean(replace(door_to_needle, door_to_needle==99, NA), na.rm = TRUE),
+    DTNMedian_m = median(replace(door_to_needle, door_to_needle==99, NA), na.rm = TRUE),
+    DTGMean_m = mean(replace(door_to_groin, door_to_groin==99, NA), na.rm = TRUE),
+    DTGMedian_m = median(replace(door_to_groin, door_to_groin==99, NA), na.rm = TRUE),
+    DISMRSMean_m = mean(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),
+    DISMRSMedian_m = median(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),
+  )
 
 
 df<-resq_mort %>% 
@@ -260,7 +260,6 @@ aes(x = discharge_date, y = Mortality30dMean)) +
   ylab("Mortality rate") +
   xlab("Discharge date") +
   expand_limits(y=0) +
-  geom_text_repel(aes(label=round(Mortality30dMean, digits=2)), color = "#0F85C8") +
   labs(
     title = "<span style = 'color: #0F85C8;'> Mortality rate</span> evolution"
   ) +
@@ -270,11 +269,12 @@ aes(x = discharge_date, y = Mortality30dMean)) +
     axis.title.y = element_text(hjust=0.77, vjust=0.77),
     plot.caption = element_text(hjust=0, size=6),
     ) +
-  annotation_custom(testText)
+  annotation_custom(testText) + 
+  geom_text_repel(aes(label=round(Mortality30dMean, digits=2)), color = "#0F85C8")
 
-p_trend_mort
+p_trend_mort 
 
-p_mort_vs_DTN <- ggplot(resq_mort[resq_mort$door_to_needle<99,], 
+p_mort_vs_DTN <- ggplot(df, 
 aes(y = Mortality30dMean, x = DTNMean)) + 
   geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
   geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) + 
@@ -282,7 +282,6 @@ aes(y = Mortality30dMean, x = DTNMean)) +
   ylab("Mortality rate") + 
   xlab("Door to needle") +
   expand_limits(y=0) +
-  geom_text(aes(label=round(Mortality30dMean, digits=2)), vjust = 2.5, color = "#0F85C8" ) +
     labs(
     title = "<span style = 'color: #0F85C8;'>Mortality rate</span> against door to needle evolution"
   ) +
@@ -292,11 +291,11 @@ aes(y = Mortality30dMean, x = DTNMean)) +
     axis.title.y = element_text(hjust=0.77, vjust=0.77),
     plot.caption = element_text(hjust=0, size=6),
     ) +
-  annotation_custom(testText)
+  annotation_custom(testText) + geom_text_repel(aes(label=round(Mortality30dMean, digits=2)), color = "#0F85C8" ) 
 
-p_mort_vs_DTN
+p_mort_vs_DTN 
 
-p_mort_vs_DTG <- ggplot(resq_mort[resq_mort$door_to_needle<99,], 
+p_mort_vs_DTG <- ggplot(df, 
 aes(y = Mortality30dMean, x = DTGMean, color="Mean")) + 
   geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
   geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) +
@@ -304,7 +303,7 @@ aes(y = Mortality30dMean, x = DTGMean, color="Mean")) +
   ylab("Mortality rate") + 
   xlab("Door to groin") +
   expand_limits(y=0) +
-  geom_text(aes(label=round(Mortality30dMean, digits=2)), vjust = 2.2, hjust = 0, color = "#0F85C8" ) +
+  geom_text_repel(aes(label=round(Mortality30dMean, digits=2)), hjust = 0, color = "#0F85C8" ) +
     labs(
     title = "<span style = 'color: #0F85C8;'>Mortality rate</span> against door to groin evolution"
   ) +
@@ -318,33 +317,11 @@ aes(y = Mortality30dMean, x = DTGMean, color="Mean")) +
 
 p_mort_vs_DTG
 
-p_mort_vs_dismrs <- ggplot(resq_mort[resq_mort$discharge_mrs<99,], 
-aes(y = Mortality30dMean, x = DISMRSMean, color="Mean")) + 
-  geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
-  geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) +
-  theme_classic() + 
-  expand_limits(y=0) +
-  ylab("Mortality rate") + 
-  xlab("Discharge mRS") +
-  geom_text(aes(label=round(Mortality30dMean, digits=2)), vjust = 2.5, color = "#0F85C8" ) +
-    labs(
-    title = "<span style = 'color: #0F85C8;'>Mortality rate</span> against discharge mRS evolution"
-  ) +
-  theme(
-    plot.title = element_markdown(),
-    axis.title.x = element_text(hjust=0.14, vjust=0.2),
-    axis.title.y = element_text(hjust=0.77, vjust=0.77),
-    plot.caption = element_text(hjust=0, size=6),
-    ) +
-  annotation_custom(testText)
-
-p_mort_vs_dismrs
-
-p_trend_DTN <- ggplot(resq_mort[resq_mort$door_to_needle<99 & resq_mort$discharge_date<2201,], 
-aes(x = discharge_date, y = DTNMean, color="Mean")) + 
+p_violin_DTN <- ggplot(resq_mort[resq_mort$door_to_needle<99 & resq_mort$discharge_date<2201,], 
+aes(x = discharge_date, y = DTNMean_m, color="Mean")) + 
   geom_violin(aes(x = discharge_date, y = door_to_needle, color=as.factor(discharge_date)), alpha=.4) +
   geom_line() +
-  geom_line(aes(y = DTNMedian, color = "Median")) +
+  geom_line(aes(y = DTNMedian_m, color = "Median")) +
   theme_classic() + 
   ylab("Door to needle") +
   xlab("Discharge date") +
@@ -356,31 +333,31 @@ aes(x = discharge_date, y = DTNMean, color="Mean")) +
     plot.caption = element_text(hjust = 0, size = 6),
     )
 
-p_trend_DTN
+p_violin_DTN
 
-p_trend_DTG <- ggplot(resq_mort[resq_mort$door_to_groin<99 & resq_mort$discharge_date<2201,], 
-aes(x = discharge_date, y = DTGMean, color="Mean")) + 
+p_violin_DTG <- ggplot(resq_mort[resq_mort$door_to_groin<99 & resq_mort$discharge_date<2201,], 
+aes(x = discharge_date, y = DTGMean_m, color="Mean")) + 
   geom_violin(aes(x = discharge_date, y = door_to_groin, color=as.factor(discharge_date)), alpha=.4) +
   geom_line() + 
-  geom_line(aes(y = DTGMedian, color = "Median")) +
+  geom_line(aes(y = DTGMedian_m, color = "Median")) +
   theme_bw() + 
   ylab("Door to groin") +
   xlab("Discharge date") +
   expand_limits(y=0)
 
-p_trend_DTG
+p_violin_DTG
 
-p_trend_dismrs <- ggplot(resq_mort[resq_mort$discharge_mrs<99 & resq_mort$discharge_date<2201,], 
-aes(x = discharge_date, y = DISMRSMean, color="Mean")) + 
+p_violin_dismrs <- ggplot(resq_mort[resq_mort$discharge_mrs<99 & resq_mort$discharge_date<2201,], 
+aes(x = discharge_date, y = DISMRSMean_m, color="Mean")) + 
   geom_violin(aes(x = discharge_date, y = discharge_mrs, color=as.factor(discharge_date)), alpha=.4) +
   geom_line() + 
-  geom_line(aes(y = DISMRSMedian, color = "Median")) +
+  geom_line(aes(y = DISMRSMedian_m, color = "Median")) +
   theme_bw() + 
   ylab("Discharge mrs") +
   xlab("Discharge date") +
   expand_limits(y=0)
 
-p_trend_dismrs
+p_violin_dismrs
 
 
 
