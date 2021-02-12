@@ -231,6 +231,8 @@ resq_mort %<>%
     DTGMedian_m = median(replace(door_to_groin, door_to_groin==99, NA), na.rm = TRUE),
     DISMRSMean_m = mean(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),
     DISMRSMedian_m = median(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),
+    NIHSSScoreMean_m = mean(replace(nihss_score, nihss_score==99, NA), na.rm = TRUE),
+    NIHSSScoreMedian_m = median(replace(nihss_score, nihss_score==99, NA), na.rm = TRUE)
   )
 
 
@@ -243,7 +245,10 @@ df<-resq_mort %>%
     DTGMean = mean(replace(door_to_groin, door_to_groin==99, NA), na.rm = TRUE),
     DTGMedian = median(replace(door_to_groin, door_to_groin==99, NA), na.rm = TRUE),
     DISMRSMean = mean(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),
-    DISMRSMedian = median(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),)
+    DISMRSMedian = median(replace(discharge_mrs, discharge_mrs==99 & 1, NA), na.rm = TRUE),
+    NIHSSScoreMean = mean(replace(nihss_score, nihss_score==99, NA), na.rm = TRUE),
+    NIHSSScoreMedian = median(replace(nihss_score, nihss_score==99, NA), na.rm = TRUE)
+  )
 
 
 # THERE IS NO DTN/DTG DATA IN 2020, IT IS EMPTY IN RAW DATA AS WELL
@@ -317,6 +322,52 @@ aes(y = Mortality30dMean, x = DTGMean)) +
 
 p_mort_vs_DTG
 
+#Discharge mRS only have 2 entries for each DTG and DTN, which means we only have two data points in the plots.
+
+p_trend_mRS <- ggplot(df[df$discharge_date<2201 & df$discharge_date>=2017,], 
+aes(x = discharge_date, y = DISMRSMean)) + 
+  geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
+  geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) + 
+  theme_classic() + 
+  ylab("Discharge mRS") +
+  xlab("Discharge date") +
+  expand_limits(y=0) +
+  labs(
+    title = "<span style = 'color: #0F85C8;'> Discharge mRS</span> evolution"
+  ) +
+  theme(
+    plot.title = element_markdown(),
+    axis.title.x = element_text(hjust=0.03, vjust=0.2),
+    axis.title.y = element_text(hjust=0.95, vjust=1),
+    plot.caption = element_text(hjust=0, size=6),
+    ) +
+  annotation_custom(testText) + 
+  geom_text_repel(aes(label=round(DISMRSMean, digits=2)), color = "#0F85C8")
+
+p_trend_mRS 
+
+p_mRS_vs_DTN <- ggplot(df, 
+aes(y = DISMRSMean, x = DTNMean)) + 
+  geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
+  geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) + 
+  theme_classic() +
+  ylab("Discharge mRS") + 
+  xlab("Door to needle") +
+  expand_limits(y=0) +
+  xlim(22, 25) +
+    labs(
+    title = "<span style = 'color: #0F85C8;'>Discharge mRS</span> against door to needle evolution"
+  ) +
+  theme(
+    plot.title = element_markdown(),
+    axis.title.x = element_text(hjust=0.03, vjust=0.2),
+    axis.title.y = element_text(hjust=0.95, vjust=0.77),
+    plot.caption = element_text(hjust=0, size=6),
+    ) +
+  annotation_custom(testText) + geom_text_repel(aes(label=round(DISMRSMean, digits=2)), color = "#0F85C8" ) 
+
+p_mRS_vs_DTN 
+
 p_mRS_vs_DTG <- ggplot(df, 
 aes(y = DISMRSMean, x = DTGMean)) + 
   geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
@@ -339,6 +390,73 @@ aes(y = DISMRSMean, x = DTGMean)) +
   annotation_custom(testText)
 
 p_mRS_vs_DTG
+
+p_mRS_vs_nihss <- ggplot(df, 
+aes(y = DISMRSMean, x = NIHSSScoreMean)) + 
+  geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
+  geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) +
+  theme_classic() +
+  ylab("Discharge mRS") + 
+  xlab("NIHSS score") +
+  expand_limits(y=0) +
+  xlim(21,23) +
+  geom_text_repel(aes(label=round(DISMRSMean, digits=2)), hjust = 0, color = "#0F85C8" ) +
+    labs(
+    title = "<span style = 'color: #0F85C8;'>Discharge mRS</span> against NIHSS score evolution"
+  ) +
+  theme(
+    plot.title = element_markdown(),
+    axis.title.x = element_text(hjust=0.025, vjust=0.2),
+    axis.title.y = element_text(hjust=0.95, vjust=0.77),
+    plot.caption = element_text(hjust=0, size=6),
+    ) +
+  annotation_custom(testText)
+
+p_mRS_vs_nihss
+
+p_trend_nihss <- ggplot(df[df$discharge_date<2201,], 
+aes(x = discharge_date, y = NIHSSScoreMean)) + 
+  geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
+  geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) + 
+  theme_classic() + 
+  ylab("NIHSS score") +
+  xlab("Discharge date") +
+  expand_limits(y=0) +
+  labs(
+    title = "<span style = 'color: #0F85C8;'>NIHSS score</span> evolution"
+  ) +
+  theme(
+    plot.title = element_markdown(),
+    axis.title.x = element_text(hjust=0.03, vjust=0.2),
+    axis.title.y = element_text(hjust=0., vjust=1),
+    plot.caption = element_text(hjust=0, size=6),
+    ) +
+  annotation_custom(testText) + 
+  geom_text_repel(aes(label=round(NIHSSScoreMean, digits=2)), color = "#0F85C8")
+
+p_trend_nihss 
+
+# p_nihss_vs_DTN <- ggplot(df, 
+# aes(y = DISMRSMean, x = NIHSSScoreMean)) + 
+#   geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
+#   geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) + 
+#   theme_classic() +
+#   ylab("NIHSS score") + 
+#   xlab("Door to needle") +
+#   expand_limits(y=0) +
+#   xlim(21, 23) +
+#     labs(
+#     title = "<span style = 'color: #0F85C8;'>NIHSS score</span> against door to needle evolution"
+#   ) +
+#   theme(
+#     plot.title = element_markdown(),
+#     axis.title.x = element_text(hjust=0.03, vjust=0.2),
+#     axis.title.y = element_text(hjust=0.95, vjust=0.77),
+#     plot.caption = element_text(hjust=0, size=6),
+#     ) +
+#   annotation_custom(testText) + geom_text_repel(aes(label=round(NIHSSScoreMean, digits=2)), color = "#0F85C8" ) 
+# 
+# p_nihss_vs_DTN 
 
 p_violin_DTN <- ggplot(resq_mort[resq_mort$door_to_needle<99 & resq_mort$discharge_date<2201,], 
 aes(x = discharge_date, y = DTNMean_m, color="Mean")) + 
