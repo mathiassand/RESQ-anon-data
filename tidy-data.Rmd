@@ -23,6 +23,7 @@ You can also embed plots, for example:
 ```{r load_data, echo=FALSE}
 #loading resq dataset
 resq_data <- read_excel("resq-raw-data/sample_hospital.xlsx")
+resq_angel <- read_excel("resq-raw-data/angel_targets.xlsx") 
 
 #checking what rows that include NA values
 resq_data %>%
@@ -547,5 +548,42 @@ p_violin_dismrs
 # p_dis_mrs
 
 ```
+
+```{r angel, echo = FALSE}
+angel_research <- resq_merge
+angel_research <- filter(angel_research, angel_research$door_to_groin < 99)
+p <- ggplot(angel_research, aes(angel_research$discharge_date, angel_research$door_to_needle))
+p + geom_point()
+  
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
