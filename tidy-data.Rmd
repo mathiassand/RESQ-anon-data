@@ -550,15 +550,17 @@ p_violin_dismrs
 ```
 
 ```{r angel, echo = FALSE}
-angel_research <- resq_merge
-angel_research <- filter(angel_research, angel_research$door_to_groin < 99)
-p <- ggplot(angel_research, aes(angel_research$discharge_date, angel_research$door_to_needle))
-p + geom_point()
-  
+angel_annotations_needle <- data.frame(
+  x = c(2019, 2019),
+  y = c(60, 45),
+  label = c("< 60","< 45")
+)
+
+p_and <- ggplot(resq_merge[resq_mort$door_to_needle<99 & resq_mort$discharge_date<2201,], 
+            aes(discharge_date, door_to_needle))
+p_and + geom_point() +  geom_label(data = angel_annotations_needle, aes(x=x, y=y, label = label))
 
 ```
-
-
 
 
 
