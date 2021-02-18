@@ -262,11 +262,11 @@ aes(x = discharge_date, y = Mortality30dMean)) +
   geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
   geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) + 
   theme_classic() + 
-  ylab("Mortality rate") +
+  ylab("Mortality rate %") +
   xlab("Discharge date") +
   expand_limits(y=0) +
   labs(
-    title = "<span style = 'color: #0F85C8;'> Mortality rate</span> evolution"
+    title = "<span style = 'color: #0F85C8;'> Mortality rate %</span> evolution"
   ) +
   theme(
     plot.title = element_markdown(),
@@ -284,11 +284,11 @@ aes(y = Mortality30dMean, x = DTNMean)) +
   geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
   geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) + 
   theme_classic() +
-  ylab("Mortality rate") + 
+  ylab("Mortality rate %") + 
   xlab("Door to needle") +
-  expand_limits(y=0) +
+  expand_limits(y=0, x=0) +
     labs(
-    title = "<span style = 'color: #0F85C8;'>Mortality rate</span> against door to needle evolution"
+    title = "<span style = 'color: #0F85C8;'>Mortality rate %</span> against door to needle evolution"
   ) +
   theme(
     plot.title = element_markdown(),
@@ -305,12 +305,12 @@ aes(y = Mortality30dMean, x = DTGMean)) +
   geom_line(color="#0F85C8", alpha=.7, size=1.7) + 
   geom_point(shape = 21, color = "#0F85C8", fill = "white", size = 5, stroke = 1.7) +
   theme_classic() +
-  ylab("Mortality rate") + 
+  ylab("Mortality rate %") + 
   xlab("Door to groin") +
-  expand_limits(y=0) +
+  expand_limits(y=0, x=0) +
   geom_text_repel(aes(label=round(Mortality30dMean, digits=2)), hjust = 0, color = "#0F85C8" ) +
     labs(
-    title = "<span style = 'color: #0F85C8;'>Mortality rate</span> against door to groin evolution"
+    title = "<span style = 'color: #0F85C8;'>Mortality rate %</span> against door to groin evolution"
   ) +
   theme(
     plot.title = element_markdown(),
@@ -353,8 +353,7 @@ aes(y = DISMRSMean, x = DTNMean)) +
   theme_classic() +
   ylab("Discharge mRS") + 
   xlab("Door to needle") +
-  expand_limits(y=0) +
-  xlim(22, 25) +
+  expand_limits(y=0, x=0) +
     labs(
     title = "<span style = 'color: #0F85C8;'>Discharge mRS</span> against door to needle evolution"
   ) +
@@ -375,8 +374,7 @@ aes(y = DISMRSMean, x = DTGMean)) +
   theme_classic() +
   ylab("Discharge mRS") + 
   xlab("Door to groin") +
-  expand_limits(y=0) +
-  xlim(62, 63) +
+  expand_limits(y=0, x=0) +
   geom_text_repel(aes(label=round(DISMRSMean, digits=2)), hjust = 0, color = "#0F85C8" ) +
     labs(
     title = "<span style = 'color: #0F85C8;'>Discharge mRS</span> against door to groin evolution"
@@ -500,6 +498,32 @@ aes(x = discharge_date, y = DISMRSMean_m, color="Mean")) +
 
 p_violin_dismrs
 
+#FUNNEL PLOT MORTALITY AGAINST PATIENTS, MADE UP DATA KIND OF
+dt <- data.frame(patients = c( 42,71,255,489,753), #these values are also made up, except for the last one, which is the res-q patient count
+                 mortalityExpected = c( 11.8,7.14,10,10.7,8.5),
+                 mortalityObserved = c(17, 12, 9.5, 10.2, 9), #this value is made up, as we don't have multiple departments
+                 unit = factor(c("A","B","C","D","E"))
+)
+
+dt$SR <- dt$mortalityObserved / dt$mortalityExpected
+
+
+# Scatter plot in ggplot
+a<-ggplot(dt, aes(x=patients, y=SR))+
+  geom_point()
+
+a<- a+geom_hline(aes(yintercept=1))
+
+a
+
+# Add a 95% Poisson limit, by using the density function to get the quantile value for each 'expected'.
+lkup<-data.frame(id=seq(1, max(dt$patients), 1))
+lkup$upper<-(qpois(0.975,lambda = lkup$id) - 0.025) / lkup$id
+lkup$lower<-(qpois(0.025,lambda = lkup$id) - 0.975) / lkup$id
+
+lkup<-gather(lkup, key, value,-id)
+
+a+ geom_line(aes(x=id, y=value, col=key), data=lkup)
 
 
 ########## MAYBE USEFUL IDK? ########## 
