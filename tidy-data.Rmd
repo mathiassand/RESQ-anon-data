@@ -573,6 +573,8 @@ a+ geom_line(aes(x=id, y=value, col=key), data=lkup)
 
 ```
 
+
+Annotations with ggplot test
 ```{r angel, echo = FALSE}
 angel_annotations_needle <- data.frame(
   x = c(2019, 2019),
@@ -586,6 +588,13 @@ p_and + geom_point() +  geom_label(data = angel_annotations_needle, aes(x=x, y=y
 
 ```
 
+Should try comparing individual data points for door to needle and MRSdischarge.
+So, MRSdisharge on Y axis, door to needle time on x-axis.
+```{r mrsAndDoorToNeedle, echo = FALSE}
+p_MRS_DTN_full <- ggplot(resq_mort[resq_mort$door_to_needle<99 & resq_mort$discharge_date<2201 & resq_mort$discharge_mrs<99,],
+                         aes(door_to_needle, discharge_mrs))
+p_MRS_DTN_full + geom_smooth() + geom_point()
+```
 
 
 
