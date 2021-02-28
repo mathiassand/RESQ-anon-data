@@ -276,7 +276,7 @@ p_trend_mort <- ggplot(
     plot.caption = element_text(hjust = 0, size = 6),
   ) +
   annotation_custom(testText) +
-  geom_text_repel(aes(label = round(Mortality30dMean, digits = 2)), color = "#0F85C8")
+  geom_text(aes(label = round(Mortality30dMean, digits = 2)), color = "#0F85C8", nudge_y = 0.8)
 
 p_trend_mort
 
@@ -300,14 +300,12 @@ p_mort_vs_DTN <- ggplot(
     plot.caption = element_text(hjust = 0, size = 6),
   ) +
   annotation_custom(testText) +
-  geom_text_repel(aes(label = ifelse((round(Mortality30dMean, digits = 2) == 10), "",
+  geom_text(aes(label = ifelse((round(Mortality30dMean, digits = 2) == 10), "",
     ifelse(round(Mortality30dMean, digits = 2) == 10.7,
       "", round(Mortality30dMean, digits = 2)
     )
   )),
-  color =
-    "#0F85C8"
-  )
+  color = "#0F85C8", nudge_y = 0.9, nudge_x = 0.1)
 
 p_mort_vs_DTN
 
@@ -326,19 +324,17 @@ p_mort_vs_DTG <- ggplot(
   ) +
   theme(
     plot.title = element_markdown(),
-    axis.title.x = element_text(hjust = 0.29, vjust = 0.2),
+    axis.title.x = element_text(hjust = 0.05, vjust = 0.2),
     axis.title.y = element_text(hjust = 0.77, vjust = 0.77),
     plot.caption = element_text(hjust = 0, size = 6),
   ) +
   annotation_custom(testText) + 
-    geom_text_repel(aes(label = ifelse((round(Mortality30dMean, digits = 2) == 10), "",
+    geom_text(aes(label = ifelse((round(Mortality30dMean, digits = 2) == 10), "",
     ifelse(round(Mortality30dMean, digits = 2) == 10.7,
       "", round(Mortality30dMean, digits = 2)
     )
   )),
-  color =
-    "#0F85C8"
-  )
+  color = "#0F85C8", nudge_x = 3)
 
 p_mort_vs_DTG
 
@@ -364,7 +360,7 @@ p_trend_mRS <- ggplot(
     plot.caption = element_text(hjust = 0, size = 6),
   ) +
   annotation_custom(testText) +
-  geom_text_repel(aes(label = round(DISMRSMean, digits = 2)), color = "#0F85C8")
+  geom_text(aes(label = round(DISMRSMean, digits = 2)), color = "#0F85C8", nudge_y = 0.3)
 
 p_trend_mRS
 
@@ -388,7 +384,7 @@ p_mRS_vs_DTN <- ggplot(
     plot.caption = element_text(hjust = 0, size = 6),
   ) +
   annotation_custom(testText) +
-  geom_text_repel(aes(label = round(DISMRSMean, digits = 2)), color = "#0F85C8")
+  geom_text_repel(aes(label = round(DISMRSMean, digits = 2)), color = "#0F85C8", nudge_x = 0.3)
 
 p_mRS_vs_DTN
 
@@ -427,7 +423,7 @@ p_mRS_vs_nihss <- ggplot(
   xlab("NIHSS score") +
   expand_limits(y = 0) +
   xlim(21, 23) +
-  geom_text_repel(aes(label = round(DISMRSMean, digits = 2)), hjust = 0, color = "#0F85C8") +
+  geom_text(aes(label = round(DISMRSMean, digits = 2)), hjust = 0, color = "#0F85C8", nudge_y = 0.3) +
   labs(
     title = "<span style = 'color: #0F85C8;'>Discharge mRS</span> against NIHSS score evolution"
   ) +
@@ -457,11 +453,11 @@ p_trend_nihss <- ggplot(
   theme(
     plot.title = element_markdown(),
     axis.title.x = element_text(hjust = 0.03, vjust = 0.2),
-    axis.title.y = element_text(hjust = 0., vjust = 1),
+    axis.title.y = element_text(hjust = 0.65, vjust = 1),
     plot.caption = element_text(hjust = 0, size = 6),
   ) +
   annotation_custom(testText) +
-  geom_text_repel(aes(label = round(NIHSSScoreMean, digits = 2)), color = "#0F85C8")
+  geom_text(aes(label = round(NIHSSScoreMean, digits = 2)), color = "#0F85C8", nudge_y = 1.6)
 
 p_trend_nihss
 
@@ -517,7 +513,14 @@ p_violin_DTG <- ggplot(
   theme_bw() +
   ylab("Door to groin") +
   xlab("Discharge date") +
-  expand_limits(y = 0)
+  expand_limits(y = 0) +
+  ggtitle("Door to groin evolution") +
+  theme(
+    axis.title.x = element_text(hjust = 0.15, vjust = 0.2),
+    axis.title.y = element_text(hjust = 0.75, vjust = 0.8),
+    plot.caption = element_text(hjust = 0, size = 6),
+  )
+  
 
 p_violin_DTG
 
@@ -654,6 +657,6 @@ dfCancerPlot +
 # p_dis_mrs
 
 
-
-
 ```
+
+
